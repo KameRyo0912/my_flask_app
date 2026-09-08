@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+
+{% block title %}メモの編集 - My Flask App{% endblock %}
+
+{% block content %}
+    <h2>メモの編集</h2>
+
+    <form action="{{ url_for('edit', id=memo.id) }}" method="POST">
+        <div>
+            <label>氏名：</label>
+            <input type="text" name="last_name" value="{{ memo.last_name }}" style="width: 70px; max-width: 400px; padding: 5px;" required>
+            <input type="text" name="first_name" value="{{ memo.first_name }}" style="width: 70px; max-width: 400px; padding: 5px;" required>
+        </div>
+        <br>
+        <div>
+            <label>内容：</label><br>
+            <textarea name="content" rows="4" cols="40">{{ memo.content }}</textarea>
+        </div>
+        <br>
+        <button type="submit">更新する</button>
+        <a href="{{ url_for('about') }}">キャンセル</a>
+    </form>
+{% endblock %}

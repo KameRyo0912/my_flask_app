@@ -1,0 +1,9 @@
+{extends "blog_base.html"}
+
+{% block title %}2026-09-08 - My Flask App{% endblock %}
+
+{% block content %}
+<h1>2026-09-08</h1>
+<p>このページは2026年9月8日の内容を表示します。</p>
+<img src="{{ url_for('static', filename='images/header.jpg') }}" alt="アイキャッチ画像">
+{% endblock %}

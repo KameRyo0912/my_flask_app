@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}マイブログ{% endblock %}</title>
+
+    <!-- static/style.css がある場合に自動読み込み -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+    <!-- ヘッダー / ナビゲーション -->
+    <header>
+        <nav>
+            <a href="/">ホーム</a>
+            <a href="/about">アバウト</a>
+        </nav>
+    </header>
+
+    <!-- メインコンテンツ領域（各ページで上書き） -->
+    <main>
+        {% block content %}
+        {% endblock %}
+    </main>
+
+    <!-- フッター -->
+    <footer>
+        <p>&copy; 2026 My Blog</p>
+    </footer>
+
+</body>
+</html>

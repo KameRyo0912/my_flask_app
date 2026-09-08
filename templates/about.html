@@ -1,0 +1,33 @@
+{% extends 'base.html' %} {% block title %}概要 - My Flask App{% endblock %} {%
+block content %}
+<!-- メモ一覧表示 -->
+<h3>保存されたメモ一覧</h3>
+{% if memos %}
+<ul style="list-style: none; padding: 0">
+  {% for memo in memos %}
+  <li
+    style="
+      border: 1px solid #ddd;
+      padding: 10px;
+      margin-bottom: 10px;
+      border-radius: 3px;
+    "
+  >
+    <strong>{{ memo.last_name }} {{ memo.first_name }}</strong>
+    {% if memo.content %}
+    <p style="margin: 5px 0; color: #555">{{ memo.content }}</p>
+    {% endif %}
+
+    <!-- 編集画面へのリンクを追加 -->
+    <a
+      href="{{ url_for('edit', id=memo.id) }}"
+      style="font-size: 0.9em; color: #007bff"
+      >[編集]</a
+    >
+  </li>
+  
+  {% endfor %}
+</ul>
+{% else %}
+<p>まだメモはありません。</p>
+{% endif %} {% endblock %}

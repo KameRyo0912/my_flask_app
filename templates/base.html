@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}My Flask App{% endblock %}</title>
+</head>
+<body style="margin: 0; font-family: sans-serif;">
+
+    <!-- ヘッダーの読み込み -->
+    {% include 'header.html' %}
+
+    <!-- メインコンテンツ領域 -->
+    <main style="padding: 20px; min-height: 60vh;">
+        {% block content %}
+        {% endblock %}
+    </main>
+
+    <!-- フッターの読み込み -->
+    {% include 'footer.html' %}
+
+</body>
+</html>
