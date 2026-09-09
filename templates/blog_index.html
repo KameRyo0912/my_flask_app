@@ -1,0 +1,23 @@
+{% extends 'blog_base.html' %}
+
+{% block title %}ブログ記事一覧 - My Flask App{% endblock %}
+
+{% block content %}
+<h1>ブログ記事一覧</h1>
+<p><a href="{{ url_for('blog_new') }}">+ 新しい記事を書く</a></p>
+
+{% if posts %}
+    <ul style="list-style: none; padding: 0;">
+        {% for post in posts %}
+            <li style="margin-bottom: 20px; border-bottom: 1px solid #ccc; padding-bottom: 10px;">
+                <h2 style="margin-bottom: 5px;">
+                    <a href="{{ url_for('blog_detail', post_id=post.id) }}">{{ post.title }}</a>
+                </h2>
+                <small>投稿日: {{ post.created_at.strftime('%Y-%m-%d %H:%M') }}</small>
+            </li>
+        {% endfor %}
+    </ul>
+{% else %}
+    <p>まだ投稿された記事はありません。</p>
+{% endif %}
+{% endblock %}

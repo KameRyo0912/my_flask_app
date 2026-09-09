@@ -1,0 +1,31 @@
+{% extends 'blog_base.html' %}
+
+{% block title %}{{ post.title }} - My Flask App{% endblock %}
+
+{% block content %}
+<article class="blog-post" style="max-width: 800px; margin: 0 auto; padding: 20px;">
+    <!-- 記事タイトル -->
+    <h1 style="margin-bottom: 10px; color: #333;">{{ post.title }}</h1>
+
+    <!-- 投稿日時 -->
+    <div class="post-meta" style="color: #666; font-size: 0.9em; margin-bottom: 20px;">
+        <time datetime="{{ post.created_at.strftime('%Y-%m-%d %H:%M') }}">
+            投稿日: {{ post.created_at.strftime('%Y年%m月%d日 %H:%M') }}
+        </time>
+    </div>
+
+    <hr style="border: 0; border-top: 1px solid #eee; margin-bottom: 30px;">
+
+    <!-- 記事本文（WYSIWYGで入力されたHTMLタグを安全にそのままレンダリング） -->
+    <div class="post-content" style="line-height: 1.8; color: #222;">
+        {{ post.body | safe }}
+    </div>
+
+    <hr style="border: 0; border-top: 1px solid #eee; margin-top: 40px; margin-bottom: 20px;">
+
+    <!-- ナビゲーションリンク -->
+    <div class="post-actions" style="display: flex; gap: 15px; font-size: 0.95em;">
+        <a href="{{ url_for('blog_index') }}" style="text-decoration: none; color: #0066cc;">← ブログ一覧に戻る</a>
+    </div>
+</article>
+{% endblock %}

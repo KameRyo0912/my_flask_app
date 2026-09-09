@@ -2,32 +2,78 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}マイブログ{% endblock %}</title>
+    <title>{% block title %}My App{% endblock %}</title>
+    <style>
+        /* 3カラム全体のコンテナ */
+        .layout-container {
+            display: flex;
+            max-width: 1200px;
+            margin: 0 auto;
+            gap: 20px;
+            padding: 20px;
+        }
 
-    <!-- static/style.css がある場合に自動読み込み -->
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+        /* 各エリアの幅指定 */
+        .sidebar-left {
+            width: 200px;
+            flex-shrink: 0;
+        }
+
+        .main-content {
+            flex: 1; /* 中央が可変幅 */
+        }
+
+        .sidebar-right {
+            width: 250px;
+            flex-shrink: 0;
+        }
+
+        /* スマホ等で縦並びにするレスポンシブ対応（任意） */
+        @media (max-width: 768px) {
+            .layout-container {
+                flex-direction: column;
+            }
+            .sidebar-left, .sidebar-right {
+                width: 100%;
+            }
+        }
+    </style>
 </head>
 <body>
 
-    <!-- ヘッダー / ナビゲーション -->
-    <header>
-        <nav>
-            <a href="/">ホーム</a>
-            <a href="/about">アバウト</a>
-        </nav>
-    </header>
+    <!-- ヘッダー -->
+    {% include 'blog_header.html' %}
 
-    <!-- メインコンテンツ領域（各ページで上書き） -->
-    <main>
-        {% block content %}
-        {% endblock %}
-    </main>
+    <!-- 3カラムレイアウト領域 -->
+    <div class="layout-container">
+        <!-- 左サイドバー -->
+        <aside class="sidebar-left">
+            {% block sidebar_left %}
+            <h3>カテゴリー</h3>
+            <ul>
+                <li><a href="#">日記</a></li>
+                <li><a href="#">メモ</a></li>
+            </ul>
+            {% endblock %}
+        </aside>
+
+        <!-- 中央メインコンテンツ -->
+        <main class="main-content">
+            {% block content %}
+            {% endblock %}
+        </main>
+
+        <!-- 右サイドバー -->
+        <aside class="sidebar-right">
+            {% block sidebar_right %}
+            {# <h3>プロフィール</h3>
+            <p>ここにプロフィールや最新記事などを表示します。</p> #}
+            {% endblock %}
+        </aside>
+    </div>
 
     <!-- フッター -->
-    <footer>
-        <p>&copy; 2026 My Blog</p>
-    </footer>
+    {% include 'blog_footer.html' %}
 
 </body>
 </html>

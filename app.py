@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request, redirect, url_for
 from flask_sqlalchemy import SQLAlchemy
+from datetime import datetime
 
 app = Flask(__name__)
 
@@ -8,6 +9,16 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///app.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
+
+# ブログ記事用のテーブル定義
+class BlogPost(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(200), nullable=False)   # 記事タイトル
+    body = db.Column(db.Text, nullable=False)           # 記事本文
+    created_at = db.Column(db.DateTime, default=datetime.now) # 投稿日時（自動記録）
+
+    def __repr__(self):
+        return f'<BlogPost {self.title}>'
 
 # データベースのテーブル定義（Memoモデル）
 class Memo(db.Model):
@@ -68,10 +79,32 @@ def edit(id):
 
     # GETアクセスの場合は既存のデータを入れた編集画面を表示
     return render_template('edit.html', memo=memo)
-@app.route('/page_2026-09-08')
-def page_2026_09_08():
-    # DBから全メモを取得して about.html に渡す
-    memos = Memo.query.all()
-    return render_template('page_2026-09-08.html', memos=memos)
+# ブログ記事詳細
+@app.route('/blog/<int:post_id>')
+def blog_detail(post_id):
+    # BlogPost テーブルから取得
+    post = BlogPost.query.get_or_404(post_id)
+    return render_template('blog_detail.html', post=post)
+# ブログ記事一覧ページ
+@app.route('/blog')
+def blog_index():
+    # 作成日時の新しい順（降順）で記事を取得
+    posts = BlogPost.query.order_by(BlogPost.created_at.desc()).all()
+    return render_template('blog_index.html', posts=posts)
+
+# 新規記事投稿ページ ＆ 投稿処理
+@app.route('/blog/new', methods=['GET', 'POST'])
+def blog_new():
+    if request.method == 'POST':
+        title = request.form.get('title')
+        body = request.form.get('body')
+
+        if title and body:
+            new_post = BlogPost(title=title, body=body)
+            db.session.add(new_post)
+            db.session.commit()
+            return redirect(url_for('blog_index'))
+
+    return render_template('blog_new.html')
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)
