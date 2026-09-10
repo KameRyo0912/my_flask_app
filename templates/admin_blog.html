@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div style="max-width: 800px; margin: 20px auto;">
+    <h2>ブログ管理ページ（管理者専用）</h2>
+    <p>管理者アカウント（<strong>{{ current_user.username }}</strong>）でログイン中</p>
+    <hr>
+
+    <div style="margin-bottom: 20px;">
+        <a href="{{ url_for('blog_new') }}" style="display: inline-block; padding: 10px 15px; background-color: #28a745; color: white; text-decoration: none; border-radius: 4px;">
+            ＋ 新しいブログ記事を投稿する
+        </a>
+    </div>
+
+    <h3>クイックリンク</h3>
+    <ul>
+        <li><a href="{{ url_for('blog_index') }}">公開中のブログ一覧を表示</a></li>
+        <li><a href="{{ url_for('index') }}">アプリ（メモ機能）のトップへ</a></li>
+    </ul>
+
+    <p style="margin-top: 30px;">
+        <a href="{{ url_for('logout') }}" style="color: red;">ログアウト</a>
+    </p>
+</div>
+{% endblock %}

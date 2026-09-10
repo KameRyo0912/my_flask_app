@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div style="max-width: 800px; margin: 20px auto;">
+    <h2>ユーザーダッシュボード</h2>
+    <p>ようこそ、<strong>{{ current_user.username }}</strong> さん！</p>
+    <hr>
+
+    <h3>利用可能な機能</h3>
+    <ul>
+        <li><a href="{{ url_for('index') }}">メモ一覧・追加ページへ</a></li>
+        <li><a href="{{ url_for('blog_index') }}">ブログ記事一覧を見る</a></li>
+    </ul>
+
+    <p style="margin-top: 30px;">
+        <a href="{{ url_for('logout') }}" style="color: red;">ログアウト</a>
+    </p>
+</div>
+{% endblock %}
