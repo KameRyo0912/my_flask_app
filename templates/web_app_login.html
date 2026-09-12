@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+
+{% block title %}ログイン - Webアプリ{% endblock %}
+
+{% block content %}
+<div style="max-width: 400px; margin: 40px auto; padding: 20px; background-color: #f9f9f9; border: 1px solid #ddd; border-radius: 8px;">
+    <h2 style="text-align: center; margin-bottom: 20px;">Webアプリ ログイン</h2>
+
+    <!-- Flashメッセージ（エラー等の表示） -->
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        <div style="background-color: #f8d7da; color: #721c24; padding: 10px; border-radius: 4px; margin-bottom: 15px; text-align: center;">
+          {% for message in messages %}
+            <p style="margin: 0;">{{ message }}</p>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
+
+    <form action="{{ url_for('web_app_login') }}" method="POST">
+        <div style="margin-bottom: 15px;">
+            <label for="username" style="display: block; margin-bottom: 5px; font-weight: bold;">ユーザー名：</label>
+            <input type="text" id="username" name="username" style="width: 100%; padding: 8px; box-sizing: border-box;" required>
+        </div>
+
+        <div style="margin-bottom: 20px;">
+            <label for="password" style="display: block; margin-bottom: 5px; font-weight: bold;">パスワード：</label>
+            <input type="password" id="password" name="password" style="width: 100%; padding: 8px; box-sizing: border-box;" required>
+        </div>
+
+        <button type="submit" style="width: 100%; padding: 10px; background-color: #007bff; color: white; border: none; border-radius: 4px; font-size: 16px; cursor: pointer; font-weight: bold;">
+            ログイン
+        </button>
+    </form>
+    <!-- フォーム（</form>）の後ろに追加 -->
+    <div style="margin-top: 15px; text-align: center;">
+        <a href="{{ url_for('register') }}" style="color: #007bff; text-decoration: none;">新規ユーザー登録はこちら</a>
+    </div>
+</div>
+{% endblock %}

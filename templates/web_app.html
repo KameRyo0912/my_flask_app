@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+
+{% block title %}トップページ - My Flask App{% endblock %}
+
+{% block content %}
+    <h1>メモ管理アプリ</h1>
+
+    <!-- メモ追加フォーム -->
+    <div style="background-color: #f9f9f9; padding: 15px; border-radius: 5px; margin-bottom: 20px;">
+        <h3>新しいメモを追加</h3>
+        <form action="/" method="POST">
+            <div style="margin-bottom: 10px;">
+                <label for="last_name">氏名：</label>
+                <input type="text" name="last_name" placeholder="姓" style="width: 100px; max-width: 400px; padding: 5px;" required>
+                <input type="text" name="first_name" placeholder="名" style="width: 100px; max-width: 400px; padding: 5px;" required>
+            </div>
+            <div style="margin-bottom: 10px;">
+                <label for="birth_date">生年月日：</label>
+                <input type="date" name="birth_date" style="width: 200px; max-width: 400px; padding: 5px;">
+            </div>
+            <div style="margin-bottom: 10px;">
+                <label for="content">内容：</label><br>
+                <textarea id="content" name="content" rows="3" style="width: 100%; max-width: 400px; padding: 5px;"></textarea>
+            </div>
+            <button type="submit" style="padding: 8px 16px; background-color: #007bff; color: white; border: none; border-radius: 3px; cursor: pointer;">保存</button>
+        </form>
+    </div>
+
+    
+{% endblock %}
