@@ -3,29 +3,28 @@
 {% block title %}{{ post.title }} - My Flask App{% endblock %}
 
 {% block content %}
-<article class="blog-post" style="max-width: 800px; margin: 0 auto; padding: 20px;">
-    <!-- 記事タイトル -->
-    <h1 style="margin-bottom: 10px; color: #333;">{{ post.title }}</h1>
+<div style="max-width: 800px; margin: 20px auto; padding: 0 15px;">
+    <!-- 記事タイトルと投稿日時 -->
+    <h1 style="font-size: 2em; color: #333; margin-bottom: 10px;">{{ post.title }}</h1>
+    <p style="color: #888; font-size: 0.9em;">投稿日: {{ post.created_at.strftime('%Y-%m-%d %H:%M') }}</p>
+    <hr style="border: 0; border-top: 1px solid #ddd; margin: 20px 0;">
 
-    <!-- 投稿日時 -->
-    <div class="post-meta" style="color: #666; font-size: 0.9em; margin-bottom: 20px;">
-        <time datetime="{{ post.created_at.strftime('%Y-%m-%d %H:%M') }}">
-            投稿日: {{ post.created_at.strftime('%Y年%m月%d日 %H:%M') }}
-        </time>
-    </div>
-
-    <hr style="border: 0; border-top: 1px solid #eee; margin-bottom: 30px;">
-
-    <!-- 記事本文（WYSIWYGで入力されたHTMLタグを安全にそのままレンダリング） -->
-    <div class="post-content" style="line-height: 1.8; color: #222;">
+    <!-- 記事本文エリア（WYSIWYGからのHTMLをそのまま描画） -->
+    <div class="blog-content" style="line-height: 1.8; color: #333; font-size: 1em; margin-bottom: 40px;">
         {{ post.body | safe }}
     </div>
 
-    <hr style="border: 0; border-top: 1px solid #eee; margin-top: 40px; margin-bottom: 20px;">
+    <!-- ログイン時のみ表示される編集・削除ボタン -->
+    {% if current_user.is_authenticated %}
+        <div style="display: flex; gap: 10px; margin-bottom: 30px; padding-top: 15px; border-top: 1px dashed #eee;">
+            <a href="{{ url_for('blog_edit', post_id=post.id) }}" style="padding: 8px 16px; background-color: #ffc107; color: #212529; text-decoration: none; border-radius: 4px; font-weight: bold; font-size: 0.9em;">編集</a>
+            <form action="{{ url_for('blog_delete', post_id=post.id) }}" method="POST" onsubmit="return confirm('本当に削除しますか？');" style="margin: 0;">
+                <button type="submit" style="padding: 8px 16px; background-color: #dc3545; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; font-size: 0.9em;">削除</button>
+            </form>
+        </div>
+    {% endif %}
 
-    <!-- ナビゲーションリンク -->
-    <div class="post-actions" style="display: flex; gap: 15px; font-size: 0.95em;">
-        <a href="{{ url_for('blog_index') }}" style="text-decoration: none; color: #0066cc;">← ブログ一覧に戻る</a>
-    </div>
-</article>
+    <!-- 記事一覧への戻りリンク -->
+    <a href="{{ url_for('blog_index') }}" style="color: #007bff; text-decoration: none; font-weight: bold;">← 記事一覧に戻る</a>
+</div>
 {% endblock %}

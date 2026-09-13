@@ -1,79 +1,99 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="ja">
-<head>
-    <meta charset="UTF-8">
+  <head>
+    <meta charset="UTF-8" />
     <title>{% block title %}My App{% endblock %}</title>
     <style>
-        /* 3カラム全体のコンテナ */
+      /* 本文内の画像が画面幅を超えないように自動縮小 */
+      .blog-content img {
+        max-width: 100% !important;
+        height: auto !important;
+        display: block;
+        margin: 15px auto;
+        border-radius: 6px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+      }
+
+      /* 挿入された表（テーブル）のレスポンシブ対応 */
+      .blog-content table {
+        max-width: 100%;
+        overflow-x: auto;
+        display: block;
+        border-collapse: collapse;
+        margin: 15px 0;
+      }
+
+      .blog-content th,
+      .blog-content td {
+        border: 1px solid #ddd;
+        padding: 8px 12px;
+      }
+      /* 3カラム全体のコンテナ */
+      .layout-container {
+        display: flex;
+        max-width: 1200px;
+        margin: 0 auto;
+        gap: 20px;
+        padding: 20px;
+      }
+
+      /* 各エリアの幅指定 */
+      .sidebar-left {
+        width: 200px;
+        flex-shrink: 0;
+      }
+
+      .main-content {
+        flex: 1; /* 中央が可変幅 */
+      }
+
+      .sidebar-right {
+        width: 250px;
+        flex-shrink: 0;
+      }
+
+      /* スマホ等で縦並びにするレスポンシブ対応（任意） */
+      @media (max-width: 768px) {
         .layout-container {
-            display: flex;
-            max-width: 1200px;
-            margin: 0 auto;
-            gap: 20px;
-            padding: 20px;
+          flex-direction: column;
         }
-
-        /* 各エリアの幅指定 */
-        .sidebar-left {
-            width: 200px;
-            flex-shrink: 0;
-        }
-
-        .main-content {
-            flex: 1; /* 中央が可変幅 */
-        }
-
+        .sidebar-left,
         .sidebar-right {
-            width: 250px;
-            flex-shrink: 0;
+          width: 100%;
         }
-
-        /* スマホ等で縦並びにするレスポンシブ対応（任意） */
-        @media (max-width: 768px) {
-            .layout-container {
-                flex-direction: column;
-            }
-            .sidebar-left, .sidebar-right {
-                width: 100%;
-            }
-        }
+      }
     </style>
-</head>
-<body>
-
+  </head>
+  <body>
     <!-- ヘッダー -->
     {% include 'blog_header.html' %}
 
     <!-- 3カラムレイアウト領域 -->
     <div class="layout-container">
-        <!-- 左サイドバー -->
-        <aside class="sidebar-left">
-            {% block sidebar_left %}
-            <h3>カテゴリー</h3>
-            <ul>
-                <li><a href="#">日記</a></li>
-                <li><a href="#">メモ</a></li>
-            </ul>
-            {% endblock %}
-        </aside>
+      <!-- 左サイドバー -->
+      <aside class="sidebar-left">
+        {% block sidebar_left %}
+        <h3>カテゴリー</h3>
+        <ul>
+          <li><a href="#">日記</a></li>
+          <li><a href="#">メモ</a></li>
+        </ul>
+        {% endblock %}
+      </aside>
 
-        <!-- 中央メインコンテンツ -->
-        <main class="main-content">
-            {% block content %}
-            {% endblock %}
-        </main>
+      <!-- 中央メインコンテンツ -->
+      <main class="main-content">{% block content %} {% endblock %}</main>
 
-        <!-- 右サイドバー -->
-        <aside class="sidebar-right">
-            {% block sidebar_right %}
-            {# <h3>プロフィール</h3>
-            <p>ここにプロフィールや最新記事などを表示します。</p> #}
-            {% endblock %}
-        </aside>
+      <!-- 右サイドバー -->
+      <aside class="sidebar-right">
+        {% block sidebar_right %} {#
+        <h3>プロフィール</h3>
+        <p>ここにプロフィールや最新記事などを表示します。</p>
+        #} {% endblock %}
+      </aside>
     </div>
 
     <!-- フッター -->
     {% include 'blog_footer.html' %}
-
-</body>
+  </body>
 </html>

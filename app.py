@@ -1,10 +1,17 @@
+import os
 from datetime import datetime
+from werkzeug.utils import secure_filename
 # 1. session をインポートに追加
-from flask import Flask, render_template, request, redirect, url_for, flash, session
+from flask import Flask, render_template, request, redirect, url_for, flash, session,jsonify
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
 from models import db, User  # models.py から db と User をインポート
+from PIL import Image
 
 app = Flask(__name__)
+# 画像の保存先フォルダ設定
+UPLOAD_FOLDER = os.path.join(app.root_path, 'static', 'uploads')
+os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 # セッション・Flashメッセージ用キー
 app.config['SECRET_KEY'] = 'your-secret-key-here'
@@ -169,6 +176,54 @@ def blog_new():
             db.session.commit()
             return redirect(url_for('blog_index'))
     return render_template('blog_new.html')
+# --- ブログ記事の編集 ---
+@app.route('/blog/edit/<int:post_id>', methods=['GET', 'POST'])
+@login_required
+def blog_edit(post_id):
+    post = BlogPost.query.get_or_404(post_id)
+    if request.method == 'POST':
+        post.title = request.form.get('title')
+        post.body = request.form.get('body')
+        db.session.commit()
+        flash('記事を更新しました。')
+        return redirect(url_for('blog_detail', post_id=post.id))
+    return render_template('blog_edit.html', post=post)
 
+# --- ブログ記事の削除 ---
+@app.route('/blog/delete/<int:post_id>', methods=['POST'])
+@login_required
+def blog_delete(post_id):
+    post = BlogPost.query.get_or_404(post_id)
+    db.session.delete(post)
+    db.session.commit()
+    flash('記事を削除しました。')
+    return redirect(url_for('blog_index'))
+# --- 画像アップロード用 API ---
+@app.route('/upload_image', methods=['POST'])
+@login_required
+def upload_image():
+    if 'file' not in request.files:
+        return jsonify({'error': 'ファイルがありません'}), 400
+    
+    file = request.files['file']
+    if file.filename == '':
+        return jsonify({'error': 'ファイルが選択されていません'}), 400
+
+    if file:
+        filename = secure_filename(file.filename)
+        save_name = f"{datetime.now().strftime('%Y%m%d%H%M%S')}_{filename}"
+        filepath = os.path.join(app.config['UPLOAD_FOLDER'], save_name)
+
+        # --- 方法3: Python(Pillow)で画像リサイズ保存 ---
+        img = Image.open(file)
+        
+        # スマホ写真の回転情報（Exif）を考慮してリサイズ
+        max_size = (1200, 1200)
+        img.thumbnail(max_size, Image.Resampling.LANCZOS)
+        
+        img.save(filepath)
+
+        image_url = url_for('static', filename=f'uploads/{save_name}')
+        return jsonify({'location': image_url})
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)
