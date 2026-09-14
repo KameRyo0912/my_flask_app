@@ -44,7 +44,7 @@
         return new Promise((resolve, reject) => {
             // 例: ファイルサイズの上限（5MB制限）
             const maxFileSize = 5 * 1024 * 1024; // 5MB
-            if (blobInfo.blob().size() > maxFileSize) {
+            if (blobInfo.blob().size > maxFileSize) {
                 reject('ファイルサイズが大きすぎます（最大 5MB まで）');
                 return;
             }
