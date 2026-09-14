@@ -1,13 +1,13 @@
 import os
 from datetime import datetime
 from werkzeug.utils import secure_filename
-# 1. session をインポートに追加
-from flask import Flask, render_template, request, redirect, url_for, flash, session,jsonify
+from flask import Flask, render_template, request, redirect, url_for, flash, session, jsonify
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
 from models import db, User  # models.py から db と User をインポート
-from PIL import Image
+from PIL import Image, ImageOps
 
 app = Flask(__name__)
+
 # 画像の保存先フォルダ設定
 UPLOAD_FOLDER = os.path.join(app.root_path, 'static', 'uploads')
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
@@ -56,6 +56,7 @@ class Memo(db.Model):
 # アプリ起動時にテーブルを自動作成
 with app.app_context():
     db.create_all()
+
 # --- 新規ユーザー登録画面 ---
 @app.route('/register', methods=['GET', 'POST'])
 def register():
@@ -79,6 +80,7 @@ def register():
         return redirect(url_for('web_app_login'))
         
     return render_template('register.html')
+
 # --- 1. Webアプリ専用 ログイン画面 ---
 @app.route('/web_app/login', methods=['GET', 'POST'])
 def web_app_login():
@@ -110,7 +112,6 @@ def web_app_index():
         flash('メインメニューからアクセスしてください。')
         return redirect(url_for('index'))
     
-    # 処理完了後、または別のページへ移動するときにフラグを消したい場合はここでpopすることも可能
     if request.method == 'POST':
         first_name = request.form.get('first_name')
         last_name = request.form.get('last_name')
@@ -124,8 +125,7 @@ def web_app_index():
     memos = Memo.query.all()
     return render_template('web_app.html', memos=memos)
 
-# --- 3. トップページ（後でメインメニューに変更予定） ---
-# --- トップページ（メインメニュー画面） ---
+# --- 3. トップページ（メインメニュー画面） ---
 @app.route('/')
 def index():
     session['from_main_menu'] = True
@@ -156,7 +156,6 @@ def blog_detail(post_id):
 # --- ブログ一覧画面 ---
 @app.route('/blog')
 def blog_index():
-    # メインメニューを経由していない場合はメインメニューへ戻す
     if not session.get('from_main_menu'):
         flash('メインメニューからアクセスしてください。')
         return redirect(url_for('index'))
@@ -176,6 +175,7 @@ def blog_new():
             db.session.commit()
             return redirect(url_for('blog_index'))
     return render_template('blog_new.html')
+
 # --- ブログ記事の編集 ---
 @app.route('/blog/edit/<int:post_id>', methods=['GET', 'POST'])
 @login_required
@@ -198,6 +198,7 @@ def blog_delete(post_id):
     db.session.commit()
     flash('記事を削除しました。')
     return redirect(url_for('blog_index'))
+
 # --- 画像アップロード用 API ---
 @app.route('/upload_image', methods=['POST'])
 @login_required
@@ -214,16 +215,33 @@ def upload_image():
         save_name = f"{datetime.now().strftime('%Y%m%d%H%M%S')}_{filename}"
         filepath = os.path.join(app.config['UPLOAD_FOLDER'], save_name)
 
-        # --- 方法3: Python(Pillow)で画像リサイズ保存 ---
-        img = Image.open(file)
-        
-        # スマホ写真の回転情報（Exif）を考慮してリサイズ
-        max_size = (1200, 1200)
-        img.thumbnail(max_size, Image.Resampling.LANCZOS)
-        
-        img.save(filepath)
+        try:
+            # Pillowで画像を開く
+            img = Image.open(file)
 
-        image_url = url_for('static', filename=f'uploads/{save_name}')
-        return jsonify({'location': image_url})
+            # スマホ写真の回転情報（Exif）を考慮して自動補正
+            try:
+                img = ImageOps.exif_transpose(img)
+            except Exception:
+                pass
+
+            # RGBAやPモードの透過画像をRGB形式に変換
+            if img.mode in ("RGBA", "P"):
+                img = img.convert("RGB")
+
+            # リサイズ処理
+            max_size = (1200, 1200)
+            img.thumbnail(max_size, Image.Resampling.LANCZOS)
+            
+            # 保存
+            img.save(filepath, quality=85, optimize=True)
+
+            image_url = url_for('static', filename=f'uploads/{save_name}')
+            return jsonify({'location': image_url})
+
+        except Exception as e:
+            print(f"Image upload error: {e}")
+            return jsonify({'error': f'画像処理エラー: {str(e)}'}), 500
+
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)
